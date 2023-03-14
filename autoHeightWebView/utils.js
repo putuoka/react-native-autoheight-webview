@@ -88,12 +88,6 @@ const updateSizeWithMessage = (element, scalesPageToFit) =>
 
     lastHeight = height;
 
-    if (heightTheSameTimes <= maxHeightTheSameTimes) {
-      forceRefreshTimeout = setTimeout(
-        updateSize,
-        heightTheSameTimes * forceRefreshDelay
-      );
-    }
     
     if(observerLoop >=5 ){
       observer.disconnect();
