@@ -76,7 +76,7 @@ const updateSizeWithMessage = (element, scalesPageToFit) =>
 
     // Make additional height checks (required to fix issues wit twitter embeds)
     clearTimeout(forceRefreshTimeout);
-    if(observerLoop >=10 ){
+    if(observerLoop >=4 ){
         observer.disconnect();
     }
 
