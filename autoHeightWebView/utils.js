@@ -2,8 +2,8 @@
 
 import {Dimensions} from 'react-native';
 
-export const topic = "rnaw"
-export const topicString = `"${topic}"`
+export const topic = 'rnaw';
+export const topicString = `"${topic}"`;
 
 const domMutationObserveScript = `
   var MutationObserver =
@@ -26,8 +26,32 @@ const updateSizeWithMessage = (element, scalesPageToFit) =>
   var forceRefreshDelay = 1000;
   var forceRefreshTimeout;
   var checkPostMessageTimeout;
+  var resx;
+  var observerLoop = 0;
+  function getDocumentVisualBoundingBox() {
+    return Array.prototype.reduce.call(document.querySelectorAll("*"), (res, el) => {
+        resx = res;
+    //Looking at BODY element, Absolute positioned elements and ignoring elements within scrollable containers.
+      if (el.tagName === 'BODY' || (el.parentElement && getComputedStyle(el.parentElement).overflow === 'visible' && getComputedStyle(el).position === 'absolute')) {
+        let rect = el.getBoundingClientRect();
+        res.offsetLeft = Math.min(res.offsetLeft, rect.left);
+        res.offsetTop = Math.min(res.offsetTop, rect.top);
+        res.width = Math.max(res.width, rect.width + Math.abs(res.offsetLeft) + rect.left);
+        res.height = Math.max(res.height, rect.height + Math.abs(res.offsetTop) + rect.top);
+      }
+      return res;
+    }, {
+      offsetLeft: 0,
+      offsetTop: 0,
+      width: 0,
+      height: 0
+    });
+  }
+  
 
   function updateSize() {
+    observerLoop = observerLoop+1;
+    var getHW = getDocumentVisualBoundingBox();
     if (zoomedin || scaling || document.fullscreenElement) {
       return;
     }
@@ -40,8 +64,8 @@ const updateSizeWithMessage = (element, scalesPageToFit) =>
     }
 
     clearTimeout(checkPostMessageTimeout);
-    var result = ${element}.getBoundingClientRect()
-    height = result.height + result.top;
+    var result = getHW
+    height = result.height;
     if(!height) {
       height = ${element}.offsetHeight || document.documentElement.offsetHeight
     }
@@ -70,6 +94,11 @@ const updateSizeWithMessage = (element, scalesPageToFit) =>
         heightTheSameTimes * forceRefreshDelay
       );
     }
+    
+    if(observerLoop >=5 ){
+      observer.disconnect();
+    }
+  
   }
   `;
 
